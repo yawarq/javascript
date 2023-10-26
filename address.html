@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pincode to City and State</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<body>
+    <label for="pincode">Pincode:</label>
+    <input type="text" id="pincode" placeholder="Enter Pincode">
+    <br><br>
+    <label for="city">City:</label>
+    <input type="text" class="readonly-field" id="city" readonly>
+    <br><br>
+    <label for="state">State:</label>
+    <input type="text" class="readonly-field" id="state" readonly>
+    <br><br>
+    <div class="form-group">
+        <label for="addressLine1">Address Line 1<span>*</span></label>
+        <input type="text" id="addressLine1" name="addressLine1" maxlength="25" required>
+    </div>
+    <br><br>
+    <div class="form-group">
+        <label for="addressLine2">Address Line 2<span>*</span></label>
+  <input type="text" id="addressLine2" name="addressLine2" maxlength="25" required>
+    </div>
+    <br><br>
+    <button id="fetchDetails">Get City and State</button>
+    <button type="button" id="nextButton1" onclick="showPopup()">Next</button>
+     
+    <div id="popup" style="display: none;">
+        <p>Confirm</p>
+        <p id="confirmedAddress"></p>
+    
+        <button type="button" id="confirmButton" onclick="showPopup()">Confirm</button>
+    
+        <button type="button" id="cancelButton" onclick="hidePopup()">Cancel</button>
+    </div>
+    <script>
+
+
+        document.getElementById('fetchDetails').addEventListener('click', function () {
+            const pincode = document.getElementById('pincode').value;
+
+            if (pincode && pincode.length==6) {
+                fetch(`https://api.postalpincode.in/pincode/${pincode}`)
+                    .then((response) =>{
+                        return response.json();
+                    })
+                    .then((data) => {
+                        if (data[0].Status === 'Success') {
+                            const postOffice = data[0].PostOffice[0];
+                            const city1 = postOffice.District;
+                            const state1 = postOffice.State;
+                            document.getElementById('city').value = city1;
+                            document.getElementById('state').value = state1;
+
+                        } else {
+                            document.getElementById('pincode').innerHTML = 'Invalid Pincode';
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        document.getElementById('city').innerHTML = 'Error occurred while fetching data.';
+                    });
+            } else {
+                document.getElementById('city').innerHTML = 'Please enter a pincode.';
+            }
+        });
+
+        function showPopup(){
+        const pincode= document.getElementById("pincode").value;
+        const state= document.getElementById("state").value;
+        const city= document.getElementById("city").value;
+        const addressLine1= document.getElementById("addressLine1").value;
+        const addressLine2= document.getElementById("addressLine2").value;
+
+        const confirmedAddress1= `Pincode: ${pincode}, State: ${state}, City: ${city}, Address Line 1: ${addressLine1}, Address Line 2: ${addressLine2}`;
+        alert(document.getElementById("confirmedAddress").textContent = confirmedAddress1)
+        window.location= 'form.html'
+   
+    }
+
+
+    </script>
+
+</body>
+</html>
